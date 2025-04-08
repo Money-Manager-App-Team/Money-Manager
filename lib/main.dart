@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/registration_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: RegistrationPage()));
 }
 
 class MyApp extends StatelessWidget {
