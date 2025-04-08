@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'moneymanager-bfdd9.firebasestorage.app',
     measurementId: 'G-RR1NCM982Q',
   );
+
 }

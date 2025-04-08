@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+
+import 'services/authentication_service.dart';
+
 
 // void main() {
 //   runApp(const MyApp());
@@ -25,8 +27,80 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class LoginScreen extends StatelessWidget {
+
+class LoginScreen extends StatefulWidget{
   const LoginScreen({super.key});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+
+class _LoginScreenState  extends State<LoginScreen> {
+  // colntrollers
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  //instancja authencticationService
+  final AuthenticationService _authService = AuthenticationService();
+
+  bool _isLoading = false;
+  String _errorMessage = '';
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  // Login method
+  Future<void> _login() async {
+    if (_emailController.text.trim().isEmpty ||
+        _passwordController.text.trim().isEmpty) {
+      setState(() {
+        _errorMessage = 'Wprowadź email i hasło';
+      });
+      return;
+    }
+
+    setState(() {
+      _isLoading = true;
+      _errorMessage = '';
+    });
+
+    try {
+      final user = await _authService.loginWithEmailPassword(
+          _emailController.text.trim(),
+          _passwordController.text.trim()
+      );
+
+      if (user != null) {
+        //TODO jak przejdzie logowanie -> do homescreen
+        // Navigator.of(context).pushReplacement(
+        //   MaterialPageRoute(builder: (context) => HomeScreen()),
+        // );
+        print('Zalogowano pomyślnie: ${user.email}');
+      } else {
+        setState(() {
+          _errorMessage = 'Błąd logowania. Sprawdź dane i spróbuj ponownie.';
+        });
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Wystąpił błąd: ${e.toString()}';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _goToRegistration() {
+    //TODO registrationscreen
+    print('registrationscreen');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,6 +157,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 TextField(
+                  controller: _emailController,
                   decoration: InputDecoration(
                     filled: true,
                     fillColor: const Color(0xFFF3F3F3),
@@ -102,6 +177,7 @@ class LoginScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 8),
                 TextField(
+                  controller: _passwordController,
                   obscureText: true,
                   decoration: InputDecoration(
                     filled: true,
@@ -130,7 +206,7 @@ class LoginScreen extends StatelessWidget {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: _login,
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.grey.shade200,
                         shape: RoundedRectangleBorder(
