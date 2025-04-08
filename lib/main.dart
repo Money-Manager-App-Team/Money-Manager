@@ -1,12 +1,4 @@
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-import 'package:money_manager/registration_page.dart';
-
-void main() {
-  runApp(const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: RegistrationPage()));
-=======
 import 'package:money_manager/home_page.dart';
 import 'package:money_manager/registration_page.dart';
 
@@ -20,7 +12,6 @@ void main() {
   // runApp(const MaterialApp(
   //     debugShowCheckedModeBanner: false,
   //     home: RegistrationPage()));
->>>>>>> cd34408 (Okno główne)
 }
 
 class MyApp extends StatelessWidget {
