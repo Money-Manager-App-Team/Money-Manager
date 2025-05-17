@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:money_manager/screens/home_page.dart';
 
 class RegistrationPage extends StatelessWidget {
   const RegistrationPage({super.key});
@@ -14,68 +15,48 @@ class RegistrationPage extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Header
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.symmetric(vertical: 40.0),
                   decoration: const BoxDecoration(
-                    color: Color(0xFF1976D2), // Blue color
+                    color: Color(0xFF1976D2),
                     borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
                   ),
                   child: const Column(
                     children: [
-                      Text(
-                        'Money Manager',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
+                      Text('Money Manager', style: TextStyle(color: Colors.white, fontSize: 20)),
                       SizedBox(height: 8),
-                      Text(
-                        'REJESTRACJA',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
+                      Text('REJESTRACJA',
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.5)),
                     ],
                   ),
                 ),
                 const SizedBox(height: 30),
 
-                // LOGIN
                 _buildTextField(label: 'LOGIN'),
-
                 const SizedBox(height: 20),
-
-                // EMAIL
                 _buildTextField(label: 'ADRES E-MAIL'),
-
                 const SizedBox(height: 20),
-
-                // PASSWORD
                 _buildTextField(label: 'HASŁO', obscure: true),
-
                 const SizedBox(height: 20),
 
-                // Already have an account?
                 const Align(
                   alignment: Alignment.centerRight,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('JUZ MASZ KONTO?', style: TextStyle(fontSize: 12)),
-                      Text(
-                        'ZALOGUJ SIĘ',
-                        style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold),
-                      ),
+                      Text('JUŻ MASZ KONTO?', style: TextStyle(fontSize: 12)),
+                      Text('ZALOGUJ SIĘ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
                     ],
                   ),
                 ),
 
                 const SizedBox(height: 30),
 
-                // Register Button
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 16),
@@ -86,12 +67,12 @@ class RegistrationPage extends StatelessWidget {
                     backgroundColor: Colors.grey[200],
                   ),
                   onPressed: () {
-                    // TODO: Registration logic here
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const HomePage()),
+                    );
                   },
-                  child: const Text(
-                    'Zarejestruj się',
-                    style: TextStyle(fontSize: 18, color: Colors.black),
-                  ),
+                  child: const Text('Zarejestruj się', style: TextStyle(fontSize: 18, color: Colors.black)),
                 ),
 
                 const SizedBox(height: 40),
@@ -107,10 +88,7 @@ class RegistrationPage extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label.toUpperCase(),
-          style: const TextStyle(fontWeight: FontWeight.bold),
-        ),
+        Text(label.toUpperCase(), style: const TextStyle(fontWeight: FontWeight.bold)),
         const SizedBox(height: 6),
         TextField(
           obscureText: obscure,
