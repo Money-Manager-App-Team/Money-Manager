@@ -44,13 +44,16 @@ class RegistrationPage extends StatelessWidget {
                 _buildTextField(label: 'HASŁO', obscure: true),
                 const SizedBox(height: 20),
 
-                const Align(
+                Align(
                   alignment: Alignment.centerRight,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
-                      Text('JUŻ MASZ KONTO?', style: TextStyle(fontSize: 12)),
-                      Text('ZALOGUJ SIĘ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                      const Text('JUŻ MASZ KONTO?', style: TextStyle(fontSize: 12)),
+                      TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        child: const Text('ZALOGUJ SIĘ', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold)),
+                      ),
                     ],
                   ),
                 ),

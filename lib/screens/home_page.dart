@@ -1,6 +1,3 @@
-// This file includes:
-// - home_page.dart
-
 import 'package:flutter/material.dart';
 import 'package:money_manager/models/transaction.dart';
 import 'package:money_manager/models/balance.dart';
@@ -120,29 +117,31 @@ class _MainHomeContentState extends State<_MainHomeContent> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const Text('Cześć, użytkowniku!', style: TextStyle(color: Colors.white, fontSize: 18)),
-                    GestureDetector(
-                      onTap: () {
+                    PopupMenuButton<String>(
+                      offset: const Offset(-40, 0),
+                      onSelected: (_) {},
+                      itemBuilder: (context) {
                         if (overBudget) {
-                          showDialog(
-                            context: context,
-                            builder: (_) => AlertDialog(
-                              title: const Text('Przekroczony budżet'),
-                              content: const Text('Twoje wydatki przekroczyły ustalony budżet.'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.pop(context),
-                                  child: const Text('OK'),
-                                ),
-                              ],
+                          return [
+                            const PopupMenuItem<String>(
+                              value: 'budget',
+                              child: Text('Twoje wydatki przekroczyły budżet'),
                             ),
-                          );
+                          ];
+                        } else {
+                          return [
+                            const PopupMenuItem<String>(
+                              value: 'empty',
+                              child: Text('Brak powiadomień'),
+                            ),
+                          ];
                         }
                       },
-                        child: Icon(
+                      icon: Icon(
                         Icons.notifications,
                         color: overBudget ? Colors.yellowAccent : Colors.white,
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

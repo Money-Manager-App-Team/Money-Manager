@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:money_manager/firebase_options.dart';
-
-import 'screens/registration_page.dart';
+import 'package:money_manager/screens/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,7 +26,7 @@ class MoneyManagerApp extends StatelessWidget {
         useMaterial3: true,
         colorSchemeSeed: Colors.blue,
       ),
-      home: const RegistrationPage(),
+      home: const LoginScreen(),
     );
   }
 }
