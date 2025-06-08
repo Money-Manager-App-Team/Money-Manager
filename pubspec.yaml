@@ -10,6 +10,8 @@ dependencies:
   flutter:
     sdk: flutter
 
+  intl: ^0.18.1 # Daty
+  fl_chart: ^0.65.0 # Wykresy
   cupertino_icons: ^1.0.8
   firebase_core: ^2.24.0 # wymagana baza dla wszystkich usług
   firebase_auth: ^4.15.0 # jeśli chcesz logowanie

@@ -21,13 +21,13 @@ class _HomePageState extends State<HomePage> {
   final TransactionService transactionService = TransactionService();
   int _currentIndex = 2; // domyślnie widok home
 
-  final List<Widget> _pages = const [
-    GraphPage(),
-    BudgetPage(),
-    _MainHomeContent(),
-    ProfilePage(),
-    Center(child: Text('Ustawienia (w przygotowaniu)')),
-  ];
+final List<Widget> _pages = [
+  const GraphPage(),
+  const BudgetPage(),
+  const _MainHomeContent(),
+  const ProfilePage(),
+  const Center(child: Text('Ustawienia (w przygotowaniu)')),
+];
 
   @override
   Widget build(BuildContext context) {
