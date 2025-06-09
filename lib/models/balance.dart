@@ -13,7 +13,12 @@ class Balance {
     double expense = 0;
 
     for (var tx in transactions) {
-      final amount = double.tryParse(tx.amount.replaceAll(RegExp(r'[^0-9.,-]'), '').replaceAll(',', '.')) ?? 0.0;
+      final amount =
+          double.tryParse(
+            tx.amount.replaceAll(RegExp(r'[^0-9.,-]'), '').replaceAll(',', '.'),
+          ) ??
+          0.0;
+
       if (amount >= 0) {
         income += amount;
       } else {

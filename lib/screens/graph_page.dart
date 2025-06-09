@@ -33,15 +33,16 @@ class _GraphPageState extends State<GraphPage> {
               value: _selectedPeriod,
               dropdownColor: Colors.white,
               icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-              items: _periods.map((period) {
-                return DropdownMenuItem<String>(
-                  value: period,
-                  child: Text(
-                    period[0].toUpperCase() + period.substring(1),
-                    style: const TextStyle(color: Colors.black),
-                  ),
-                );
-              }).toList(),
+              items:
+                  _periods.map((period) {
+                    return DropdownMenuItem<String>(
+                      value: period,
+                      child: Text(
+                        period[0].toUpperCase() + period.substring(1),
+                        style: const TextStyle(color: Colors.black),
+                      ),
+                    );
+                  }).toList(),
               onChanged: (newPeriod) {
                 setState(() {
                   _selectedPeriod = newPeriod!;
@@ -62,14 +63,13 @@ class _GraphPageState extends State<GraphPage> {
           } else {
             final transactions = snapshot.data ?? [];
             final groupedData = _groupBalances(transactions, _selectedPeriod);
-            final sortedTransactions = List.of(transactions)
-              ..sort((a, b) {
-                try {
-                  return DateTime.parse(a.date).compareTo(DateTime.parse(b.date));
-                } catch (_) {
-                  return 0;
-                }
-              });
+            final sortedTransactions = List.of(transactions)..sort((a, b) {
+              try {
+                return DateTime.parse(a.date).compareTo(DateTime.parse(b.date));
+              } catch (_) {
+                return 0;
+              }
+            });
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: LineChart(
@@ -82,26 +82,32 @@ class _GraphPageState extends State<GraphPage> {
     );
   }
 
-  Map<String, double> _groupBalances(List<AppTransaction> transactions, String period) {
+  Map<String, double> _groupBalances(
+    List<AppTransaction> transactions,
+    String period,
+  ) {
     Map<String, double> data = {};
     double runningBalance = 0.0;
 
-    final sortedTransactions = List.of(transactions)
-      ..sort((a, b) {
-        try {
-          return DateTime.parse(a.date).compareTo(DateTime.parse(b.date));
-        } catch (_) {
-          return 0;
-        }
-      });
+    final sortedTransactions = List.of(transactions)..sort((a, b) {
+      try {
+        return DateTime.parse(a.date).compareTo(DateTime.parse(b.date));
+      } catch (_) {
+        return 0;
+      }
+    });
 
     DateFormat formatter;
     switch (period) {
       case 'day':
         for (var i = 0; i < sortedTransactions.length; i++) {
           final tx = sortedTransactions[i];
-          final amount = double.tryParse(
-                tx.amount.replaceAll(RegExp(r'[^0-9.,-]'), '').replaceAll(',', '.')) ??
+          final amount =
+              double.tryParse(
+                tx.amount
+                    .replaceAll(RegExp(r'[^0-9.,-]'), '')
+                    .replaceAll(',', '.'),
+              ) ??
               0.0;
           runningBalance += amount;
           data[i.toString()] = runningBalance;
@@ -123,8 +129,12 @@ class _GraphPageState extends State<GraphPage> {
     for (var tx in sortedTransactions) {
       try {
         final parsedDate = DateTime.parse(tx.date);
-        final amount = double.tryParse(
-              tx.amount.replaceAll(RegExp(r'[^0-9.,-]'), '').replaceAll(',', '.')) ??
+        final amount =
+            double.tryParse(
+              tx.amount
+                  .replaceAll(RegExp(r'[^0-9.,-]'), '')
+                  .replaceAll(',', '.'),
+            ) ??
             0.0;
         runningBalance += amount;
         final dateKey = formatter.format(parsedDate);
@@ -138,24 +148,27 @@ class _GraphPageState extends State<GraphPage> {
   }
 
   LineChartData _createLineChartData(
-      Map<String, double> data, Budget budget, List<AppTransaction> transactions) {
+    Map<String, double> data,
+    Budget budget,
+    List<AppTransaction> transactions,
+  ) {
     final spots = <FlSpot>[];
     final isDaily = _selectedPeriod == 'day';
 
-    final keys = data.keys.toList()
-      ..sort((a, b) {
-        if (isDaily) {
-          return int.parse(a).compareTo(int.parse(b));
-        } else {
-          try {
-            final af = DateFormat.yMd().parse(a);
-            final bf = DateFormat.yMd().parse(b);
-            return af.compareTo(bf);
-          } catch (_) {
-            return a.compareTo(b);
+    final keys =
+        data.keys.toList()..sort((a, b) {
+          if (isDaily) {
+            return int.parse(a).compareTo(int.parse(b));
+          } else {
+            try {
+              final af = DateFormat.yMd().parse(a);
+              final bf = DateFormat.yMd().parse(b);
+              return af.compareTo(bf);
+            } catch (_) {
+              return a.compareTo(b);
+            }
           }
-        }
-      });
+        });
 
     for (int i = 0; i < keys.length; i++) {
       final y = data[keys[i]]!;
@@ -192,7 +205,9 @@ class _GraphPageState extends State<GraphPage> {
         ),
         handleBuiltInTouches: true,
         touchCallback: (FlTouchEvent event, LineTouchResponse? response) {
-          if (event is FlTapUpEvent && response != null && response.lineBarSpots != null) {
+          if (event is FlTapUpEvent &&
+              response != null &&
+              response.lineBarSpots != null) {
             final tappedSpot = response.lineBarSpots!.first;
             int index = tappedSpot.x.toInt();
             if (isDaily && index < transactions.length) {
@@ -206,9 +221,7 @@ class _GraphPageState extends State<GraphPage> {
         leftTitles: AxisTitles(
           sideTitles: SideTitles(showTitles: true, reservedSize: 40),
         ),
-        bottomTitles: AxisTitles(
-          sideTitles: SideTitles(showTitles: false),
-        ),
+        bottomTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
       ),
       lineBarsData: [
         LineChartBarData(
@@ -240,11 +253,16 @@ class _GraphPageState extends State<GraphPage> {
               if (transaction.subtitle.isNotEmpty)
                 Text(
                   transaction.subtitle,
-                  style: const TextStyle(fontStyle: FontStyle.italic, color: Colors.grey),
+                  style: const TextStyle(
+                    fontStyle: FontStyle.italic,
+                    color: Colors.grey,
+                  ),
                 ),
               const SizedBox(height: 8),
               Text('Kwota: ${transaction.amount}'),
-              Text('Data: ${DateFormat.yMMMd().format(DateTime.parse(transaction.date))}'),
+              Text(
+                'Data: ${DateFormat.yMMMd().format(DateTime.parse(transaction.date))}',
+              ),
             ],
           ),
           actions: [

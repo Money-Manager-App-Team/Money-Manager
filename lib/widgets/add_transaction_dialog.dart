@@ -71,8 +71,9 @@ class _AddTransactionDialogState extends State<AddTransactionDialog> {
         ),
         ElevatedButton(
           onPressed: () async {
-            double parsedAmount = double.tryParse(
-              _amountController.text.replaceAll(',', '.')) ?? 0.0;
+            double parsedAmount =
+                double.tryParse(_amountController.text.replaceAll(',', '.')) ??
+                0.0;
             if (!_isIncome) parsedAmount *= -1;
 
             final tx = AppTransaction(

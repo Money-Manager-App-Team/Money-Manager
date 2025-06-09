@@ -1,39 +1,41 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:money_manager/models/transaction.dart';
-import 'package:money_manager/firebase_options.dart';
 
 class TransactionService {
-  static final TransactionService _instance = TransactionService._internal();
-  factory TransactionService() => _instance;
-
-  TransactionService._internal();
-
-  final List<AppTransaction> _localTransactions = [];
-
-  final bool _firebaseAvailable = DefaultFirebaseOptions.currentPlatformOrNull != null;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
   Future<void> addTransaction(AppTransaction transaction) async {
-    _localTransactions.insert(0, transaction);
+    final user = _auth.currentUser;
+    if (user == null) throw Exception('User not logged in');
 
-    if (_firebaseAvailable) {
-      final firestore = FirebaseFirestore.instance;
-      await firestore.collection('transactions').add(transaction.toMap());
-    }
+    await _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('transactions')
+        .add({
+          ...transaction.toMap(),
+          'userId': user.uid, // Dodajemy ID użytkownika
+          'timestamp': FieldValue.serverTimestamp(), // Dodajemy timestamp
+        });
   }
 
   Stream<List<AppTransaction>> getTransactions() {
-    if (_firebaseAvailable) {
-      return FirebaseFirestore.instance
-          .collection('transactions')
-          .snapshots()
-          .map((snapshot) => snapshot.docs
-              .map((doc) => AppTransaction.fromMap(doc.data()))
-              .toList());
-    }
+    final user = _auth.currentUser;
+    if (user == null) return Stream.value([]);
 
-    return Stream<List<AppTransaction>>.periodic(
-      const Duration(milliseconds: 500),
-      (_) => List.unmodifiable(_localTransactions),
-    ).asBroadcastStream();
+    return _firestore
+        .collection('users')
+        .doc(user.uid)
+        .collection('transactions')
+        .orderBy('timestamp', descending: true)
+        .snapshots()
+        .map(
+          (snapshot) =>
+              snapshot.docs
+                  .map((doc) => AppTransaction.fromMap(doc.data()))
+                  .toList(),
+        );
   }
 }

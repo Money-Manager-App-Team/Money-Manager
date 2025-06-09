@@ -11,12 +11,18 @@ class TransactionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(transaction.title, style: const TextStyle(fontWeight: FontWeight.bold)),
+      title: Text(
+        transaction.title,
+        style: const TextStyle(fontWeight: FontWeight.bold),
+      ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(transaction.subtitle),
-          Text(transaction.date.substring(0, 10), style: const TextStyle(fontSize: 12)),
+          Text(
+            transaction.date.substring(0, 10),
+            style: const TextStyle(fontSize: 12),
+          ),
         ],
       ),
       trailing: Text(transaction.amount),

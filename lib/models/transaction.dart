@@ -3,12 +3,14 @@ class AppTransaction {
   final String subtitle;
   final String date;
   final String amount;
+  final String? userId; // Dodane pole
 
   AppTransaction({
     required this.title,
     required this.subtitle,
     required this.date,
     required this.amount,
+    this.userId,
   });
 
   factory AppTransaction.fromMap(Map<String, dynamic> map) {
@@ -17,6 +19,7 @@ class AppTransaction {
       subtitle: map['subtitle'] ?? '',
       date: map['date'] ?? '',
       amount: map['amount'] ?? '',
+      userId: map['userId'],
     );
   }
 
@@ -26,6 +29,7 @@ class AppTransaction {
       'subtitle': subtitle,
       'date': date,
       'amount': amount,
+      'userId': userId,
     };
   }
 }
