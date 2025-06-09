@@ -22,15 +22,22 @@ class _BudgetPageState extends State<BudgetPage> {
   Widget build(BuildContext context) {
     return StreamBuilder<Budget>(
       stream: BudgetService().budgetStream,
-      initialData: BudgetService().budget,
+      initialData:
+          BudgetService()
+              .budget, // jeśli masz statyczny getter, albo zmień na null i sprawdź null
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Scaffold(
             body: Center(child: CircularProgressIndicator()),
           );
         }
+
         final budget = snapshot.data!;
-        _controller.text = budget.max.toStringAsFixed(0);
+        // Aktualizujemy controller tekstowy tylko wtedy, gdy tekst się różni,
+        // aby uniknąć niepotrzebnego resetowania kursora
+        if (_controller.text != budget.max.toStringAsFixed(0)) {
+          _controller.text = budget.max.toStringAsFixed(0);
+        }
 
         final percentage =
             budget.max == 0 ? 0.0 : (budget.value / budget.max).clamp(0.0, 1.0);

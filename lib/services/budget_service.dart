@@ -22,7 +22,9 @@ class BudgetService {
         );
   }
 
-  get budget => null;
+  // Usuń lub popraw getter budget:
+  // Budżet domyślny, jeśli chcesz (niezalecane, lepiej korzystać ze streama):
+  Budget get budget => Budget(max: 1000, value: 0);
 
   Future<void> updateBudget(Budget newBudget) async {
     final user = _auth.currentUser;
