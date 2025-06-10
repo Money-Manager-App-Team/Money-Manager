@@ -176,8 +176,6 @@ class _GraphPageState extends State<GraphPage> {
       spots.add(FlSpot(x, y));
     }
 
-    final maxX = spots.isNotEmpty ? (spots.length - 1).toDouble() : 1.0;
-
     bool isUnderBudget = spots.any((spot) => spot.y < budget.max);
 
     return LineChartData(
