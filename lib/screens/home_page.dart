@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:money_manager/models/transaction.dart';
 import 'package:money_manager/models/balance.dart';
 import 'package:money_manager/models/budget.dart';
+import 'package:money_manager/screens/settings_page.dart';
 import 'package:money_manager/services/transaction_service.dart';
 import 'package:money_manager/services/budget_service.dart';
 import 'package:money_manager/widgets/add_transaction_dialog.dart';
@@ -27,7 +28,7 @@ class _HomePageState extends State<HomePage> {
     BudgetPage(),
     _MainHomeContent(),
     ProfilePage(),
-    Center(child: Text('Ustawienia (w przygotowaniu)')),
+    OptionsPage(),
   ];
 
   @override
