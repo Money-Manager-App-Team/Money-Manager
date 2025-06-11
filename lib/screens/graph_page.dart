@@ -14,10 +14,6 @@ class GraphPage extends StatefulWidget {
 }
 
 class _GraphPageState extends State<GraphPage> {
-  String _selectedPeriod = 'month';
-
-  final List<String> _periods = ['day', 'week', 'month', 'year'];
-
   @override
   Widget build(BuildContext context) {
     final budget = BudgetService().budget;
@@ -27,31 +23,6 @@ class _GraphPageState extends State<GraphPage> {
         title: const Text('Wizualizacja finansowa'),
         backgroundColor: const Color(0xFF1976D2),
         foregroundColor: Colors.white,
-        actions: [
-          DropdownButtonHideUnderline(
-            child: DropdownButton<String>(
-              value: _selectedPeriod,
-              dropdownColor: Colors.white,
-              icon: const Icon(Icons.arrow_drop_down, color: Colors.white),
-              items:
-                  _periods.map((period) {
-                    return DropdownMenuItem<String>(
-                      value: period,
-                      child: Text(
-                        period[0].toUpperCase() + period.substring(1),
-                        style: const TextStyle(color: Colors.black),
-                      ),
-                    );
-                  }).toList(),
-              onChanged: (newPeriod) {
-                setState(() {
-                  _selectedPeriod = newPeriod!;
-                });
-              },
-            ),
-          ),
-          const SizedBox(width: 12),
-        ],
       ),
       body: StreamBuilder<List<AppTransaction>>(
         stream: TransactionService().getTransactions(),
@@ -62,14 +33,19 @@ class _GraphPageState extends State<GraphPage> {
             return Center(child: Text('Błąd: ${snapshot.error}'));
           } else {
             final transactions = snapshot.data ?? [];
-            final groupedData = _groupBalances(transactions, _selectedPeriod);
-            final sortedTransactions = List.of(transactions)..sort((a, b) {
-              try {
-                return DateTime.parse(a.date).compareTo(DateTime.parse(b.date));
-              } catch (_) {
-                return 0;
-              }
-            });
+
+            // Always sort oldest to newest
+            final sortedTransactions = List.of(transactions)
+              ..sort((a, b) {
+                try {
+                  return DateTime.parse(a.date).compareTo(DateTime.parse(b.date));
+                } catch (_) {
+                  return 0;
+                }
+              });
+
+            final groupedData = _groupBalances(sortedTransactions);
+
             return Padding(
               padding: const EdgeInsets.all(16.0),
               child: LineChart(
@@ -82,66 +58,17 @@ class _GraphPageState extends State<GraphPage> {
     );
   }
 
-  Map<String, double> _groupBalances(
-    List<AppTransaction> transactions,
-    String period,
-  ) {
+  Map<String, double> _groupBalances(List<AppTransaction> transactions) {
     Map<String, double> data = {};
     double runningBalance = 0.0;
 
-    final sortedTransactions = List.of(transactions)..sort((a, b) {
-      try {
-        return DateTime.parse(a.date).compareTo(DateTime.parse(b.date));
-      } catch (_) {
-        return 0;
-      }
-    });
-
-    DateFormat formatter;
-    switch (period) {
-      case 'day':
-        for (var i = 0; i < sortedTransactions.length; i++) {
-          final tx = sortedTransactions[i];
-          final amount =
-              double.tryParse(
-                tx.amount
-                    .replaceAll(RegExp(r'[^0-9.,-]'), '')
-                    .replaceAll(',', '.'),
-              ) ??
-              0.0;
-          runningBalance += amount;
-          data[i.toString()] = runningBalance;
-        }
-        return data;
-      case 'week':
-        formatter = DateFormat.E();
-        break;
-      case 'month':
-        formatter = DateFormat.d();
-        break;
-      case 'year':
-        formatter = DateFormat.MMM();
-        break;
-      default:
-        formatter = DateFormat.yMd();
-    }
-
-    for (var tx in sortedTransactions) {
-      try {
-        final parsedDate = DateTime.parse(tx.date);
-        final amount =
-            double.tryParse(
-              tx.amount
-                  .replaceAll(RegExp(r'[^0-9.,-]'), '')
-                  .replaceAll(',', '.'),
-            ) ??
-            0.0;
-        runningBalance += amount;
-        final dateKey = formatter.format(parsedDate);
-        data[dateKey] = runningBalance;
-      } catch (_) {
-        // skip invalid dates
-      }
+    for (var i = 0; i < transactions.length; i++) {
+      final tx = transactions[i];
+      final amount = double.tryParse(
+            tx.amount.replaceAll(RegExp(r'[^0-9.,-]'), '').replaceAll(',', '.')) ??
+          0.0;
+      runningBalance += amount;
+      data[i.toString()] = runningBalance;
     }
 
     return data;
@@ -153,22 +80,8 @@ class _GraphPageState extends State<GraphPage> {
     List<AppTransaction> transactions,
   ) {
     final spots = <FlSpot>[];
-    final isDaily = _selectedPeriod == 'day';
 
-    final keys =
-        data.keys.toList()..sort((a, b) {
-          if (isDaily) {
-            return int.parse(a).compareTo(int.parse(b));
-          } else {
-            try {
-              final af = DateFormat.yMd().parse(a);
-              final bf = DateFormat.yMd().parse(b);
-              return af.compareTo(bf);
-            } catch (_) {
-              return a.compareTo(b);
-            }
-          }
-        });
+    final keys = data.keys.toList()..sort((a, b) => int.parse(a).compareTo(int.parse(b)));
 
     for (int i = 0; i < keys.length; i++) {
       final y = data[keys[i]]!;
@@ -187,7 +100,7 @@ class _GraphPageState extends State<GraphPage> {
             return touchedSpots.map((spot) {
               int index = spot.x.toInt();
               String tooltipText;
-              if (isDaily && index < transactions.length) {
+              if (index < transactions.length) {
                 final tx = transactions[index];
                 tooltipText =
                     '${tx.title}\n${tx.amount} PLN\n${DateFormat.yMMMd().format(DateTime.parse(tx.date))}';
@@ -208,7 +121,7 @@ class _GraphPageState extends State<GraphPage> {
               response.lineBarSpots != null) {
             final tappedSpot = response.lineBarSpots!.first;
             int index = tappedSpot.x.toInt();
-            if (isDaily && index < transactions.length) {
+            if (index < transactions.length) {
               final tx = transactions[index];
               _showTransactionDetailsDialog(tx);
             }
@@ -224,7 +137,7 @@ class _GraphPageState extends State<GraphPage> {
       lineBarsData: [
         LineChartBarData(
           spots: spots,
-          isCurved: !isDaily,
+          isCurved: false,
           color: Colors.blue,
           belowBarData: BarAreaData(
             show: isUnderBudget,
