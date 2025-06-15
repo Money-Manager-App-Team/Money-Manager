@@ -11,18 +11,17 @@ import 'package:money_manager/widgets/transaction_item.dart';
 import 'package:money_manager/screens/budget_page.dart';
 import 'package:money_manager/screens/graph_page.dart';
 import 'package:money_manager/screens/profile_page.dart';
-
+ 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
-
+ 
   @override
   State<HomePage> createState() => _HomePageState();
 }
-
+ 
 class _HomePageState extends State<HomePage> {
-  final TransactionService transactionService = TransactionService();
-  int _currentIndex = 2; // domyślnie widok home
-
+  int _currentIndex = 2;
+ 
   final List<Widget> _pages = const [
     GraphPage(),
     BudgetPage(),
@@ -30,24 +29,23 @@ class _HomePageState extends State<HomePage> {
     ProfilePage(),
     OptionsPage(),
   ];
-
+ 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      floatingActionButton:
-          _currentIndex == 2
-              ? FloatingActionButton(
-                backgroundColor: Colors.black,
-                onPressed: () {
-                  showDialog(
-                    context: context,
-                    builder: (_) => const AddTransactionDialog(),
-                  ).then((_) => setState(() {}));
-                },
-                child: const Icon(Icons.add, color: Colors.white),
-              )
-              : null,
+      floatingActionButton: _currentIndex == 2
+          ? FloatingActionButton(
+              backgroundColor: Colors.black,
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (_) => const AddTransactionDialog(),
+                ).then((_) => setState(() {}));
+              },
+              child: const Icon(Icons.add, color: Colors.white),
+            )
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
@@ -67,36 +65,34 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-// Brakująca klasa _MainHomeContent (stateful widget)
+ 
 class _MainHomeContent extends StatefulWidget {
   const _MainHomeContent({Key? key}) : super(key: key);
-
+ 
   @override
   State<_MainHomeContent> createState() => _MainHomeContentState();
 }
-
+ 
 class _MainHomeContentState extends State<_MainHomeContent> {
   final TransactionService transactionService = TransactionService();
   TransactionSort _currentSort = TransactionSort.newest;
-
+ 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<List<AppTransaction>>(
       stream: transactionService.getTransactions(),
       builder: (context, snapshot) {
-        if (!snapshot.hasData)
-          return const Center(child: CircularProgressIndicator());
+        if (!snapshot.hasData) return const Center(child: CircularProgressIndicator());
         final transactions = List<AppTransaction>.from(snapshot.data!);
         final balance = Balance.fromTransactions(transactions);
-
+ 
         return StreamBuilder<Budget>(
           stream: BudgetService().budgetStream,
           builder: (context, budgetSnapshot) {
             final budget = budgetSnapshot.data ?? Budget(max: 1000, value: 0);
             final bool overBudget = balance.expense.abs() > budget.value;
             final bool negativeBalance = balance.expense.abs() > balance.income;
-
+ 
             transactions.sort((a, b) {
               switch (_currentSort) {
                 case TransactionSort.newest:
@@ -111,23 +107,41 @@ class _MainHomeContentState extends State<_MainHomeContent> {
                   return _extractAmount(b).compareTo(_extractAmount(a));
               }
             });
-
+ 
             return SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  // Stylizowany nagłówek
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 24,
+                    decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [Color(0xFF1976D2), Color(0xFF42A5F5)],
+                        begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                      ),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(30),
+                        bottomRight: Radius.circular(30),
+                      ),
                     ),
-                    width: double.infinity,
-                    color: const Color(0xFF42A5F5),
+                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 30),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(builder: (_) => const ProfilePage()));
+                          },
+                          child: const Icon(Icons.arrow_forward_ios, color: Colors.white),
+                        ),
                         const Text(
                           'Cześć, użytkowniku!',
-                          style: TextStyle(color: Colors.white, fontSize: 18),
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         PopupMenuButton<String>(
                           offset: const Offset(-40, 0),
@@ -137,9 +151,7 @@ class _MainHomeContentState extends State<_MainHomeContent> {
                               return const [
                                 PopupMenuItem<String>(
                                   value: 'budget',
-                                  child: Text(
-                                    'Twoje wydatki przekroczyły budżet',
-                                  ),
+                                  child: Text('Twoje wydatki przekroczyły budżet'),
                                 ),
                               ];
                             } else {
@@ -153,22 +165,29 @@ class _MainHomeContentState extends State<_MainHomeContent> {
                           },
                           icon: Icon(
                             Icons.notifications,
-                            color:
-                                overBudget ? Colors.yellowAccent : Colors.white,
+                            color: overBudget ? Colors.yellowAccent : Colors.white,
                           ),
                         ),
                       ],
                     ),
                   ),
+ 
+                  const SizedBox(height: 16),
+ 
+                  // Panel saldo
                   Container(
-                    margin: const EdgeInsets.symmetric(vertical: 8),
-                    padding: const EdgeInsets.all(16),
+                    margin: const EdgeInsets.symmetric(horizontal: 16),
+                    padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color:
-                          negativeBalance
-                              ? Colors.redAccent
-                              : const Color(0xFF42A5F5),
-                      borderRadius: BorderRadius.circular(12),
+                      color: negativeBalance ? Colors.redAccent : const Color(0xFF1976D2),
+                      borderRadius: BorderRadius.circular(20),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.4),
+                          blurRadius: 10,
+                          offset: const Offset(0, 5),
+                        ),
+                      ],
                     ),
                     child: Column(
                       children: [
@@ -181,18 +200,17 @@ class _MainHomeContentState extends State<_MainHomeContent> {
                           '${balance.total.toStringAsFixed(2)} PLN',
                           style: const TextStyle(
                             color: Colors.white,
-                            fontSize: 24,
+                            fontSize: 26,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: [
                             BalanceItem(
                               label: 'Wydatki',
-                              value:
-                                  '${balance.expense.abs().toStringAsFixed(2)} PLN',
+                              value: '${balance.expense.abs().toStringAsFixed(2)} PLN',
                             ),
                             BalanceItem(
                               label: 'Przychody',
@@ -203,7 +221,9 @@ class _MainHomeContentState extends State<_MainHomeContent> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 12),
+ 
+                  const SizedBox(height: 24),
+ 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Row(
@@ -217,31 +237,29 @@ class _MainHomeContentState extends State<_MainHomeContent> {
                           ),
                         ),
                         PopupMenuButton<TransactionSort>(
-                          onSelected:
-                              (sort) => setState(() => _currentSort = sort),
-                          itemBuilder:
-                              (context) => const [
-                                PopupMenuItem(
-                                  value: TransactionSort.newest,
-                                  child: Text('Od najnowszych'),
-                                ),
-                                PopupMenuItem(
-                                  value: TransactionSort.oldest,
-                                  child: Text('Od najstarszych'),
-                                ),
-                                PopupMenuItem(
-                                  value: TransactionSort.alphabetical,
-                                  child: Text('Alfabetycznie'),
-                                ),
-                                PopupMenuItem(
-                                  value: TransactionSort.amountAsc,
-                                  child: Text('Od najmniejszych'),
-                                ),
-                                PopupMenuItem(
-                                  value: TransactionSort.amountDesc,
-                                  child: Text('Od największych'),
-                                ),
-                              ],
+                          onSelected: (sort) => setState(() => _currentSort = sort),
+                          itemBuilder: (context) => const [
+                            PopupMenuItem(
+                              value: TransactionSort.newest,
+                              child: Text('Od najnowszych'),
+                            ),
+                            PopupMenuItem(
+                              value: TransactionSort.oldest,
+                              child: Text('Od najstarszych'),
+                            ),
+                            PopupMenuItem(
+                              value: TransactionSort.alphabetical,
+                              child: Text('Alfabetycznie'),
+                            ),
+                            PopupMenuItem(
+                              value: TransactionSort.amountAsc,
+                              child: Text('Od najmniejszych'),
+                            ),
+                            PopupMenuItem(
+                              value: TransactionSort.amountDesc,
+                              child: Text('Od największych'),
+                            ),
+                          ],
                           icon: const Icon(Icons.more_vert),
                         ),
                       ],
@@ -260,9 +278,8 @@ class _MainHomeContentState extends State<_MainHomeContent> {
       },
     );
   }
-
+ 
   double _extractAmount(AppTransaction tx) {
-    // Usuwamy wszystko poza cyframi, kropką, przecinkiem i minusami, zamieniamy przecinek na kropkę
     final cleaned = tx.amount
         .replaceAll(RegExp(r'[^0-9.,-]'), '')
         .replaceAll(',', '.');
