@@ -54,9 +54,9 @@ class _BudgetPageState extends State<BudgetPage> {
                   },
                   child: const CircleAvatar(
                     radius: 18,
-                    backgroundImage: NetworkImage(
-                      'https://example.com/avatar.jpg',
-                    ),
+                    backgroundImage: const AssetImage('assets/user_avatar.png'),
+
+
                     backgroundColor: Colors.white,
                   ),
                 ),

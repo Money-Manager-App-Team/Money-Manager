@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:money_manager/firebase_options.dart';
 import 'package:money_manager/screens/home_page.dart';
 import 'package:money_manager/screens/login_screen.dart';
+import 'package:money_manager/screens/profile_page.dart';
+import 'package:money_manager/screens/settings_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +41,9 @@ class MoneyManagerApp extends StatelessWidget {
       title: 'Money Manager',
       debugShowCheckedModeBanner: false,
       theme: ThemeData(useMaterial3: true, colorSchemeSeed: Colors.blue),
+      routes: {
+        '/profile': (context) => const ProfilePage(),
+      },
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {

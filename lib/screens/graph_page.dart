@@ -23,6 +23,23 @@ class _GraphPageState extends State<GraphPage> {
         title: const Text('Wizualizacja finansowa'),
         backgroundColor: const Color(0xFF1976D2),
         foregroundColor: Colors.white,
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 16),
+            child: GestureDetector(
+              onTap: () {
+                Navigator.pushNamed(context, '/profile');
+              },
+              child: const CircleAvatar(
+                radius: 18,
+                backgroundImage: const AssetImage('assets/user_avatar.png'),
+
+
+                backgroundColor: Colors.white,
+              ),
+            ),
+          ),
+        ],
       ),
       body: StreamBuilder<List<AppTransaction>>(
         stream: TransactionService().getTransactions(),
