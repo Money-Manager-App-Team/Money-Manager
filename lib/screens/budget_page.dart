@@ -22,9 +22,7 @@ class _BudgetPageState extends State<BudgetPage> {
   Widget build(BuildContext context) {
     return StreamBuilder<Budget>(
       stream: BudgetService().budgetStream,
-      initialData:
-          BudgetService()
-              .budget, // jeśli masz statyczny getter, albo zmień na null i sprawdź null
+      initialData: BudgetService().budget,
       builder: (context, snapshot) {
         if (!snapshot.hasData) {
           return const Scaffold(
@@ -33,14 +31,13 @@ class _BudgetPageState extends State<BudgetPage> {
         }
 
         final budget = snapshot.data!;
-        // Aktualizujemy controller tekstowy tylko wtedy, gdy tekst się różni,
-        // aby uniknąć niepotrzebnego resetowania kursora
         if (_controller.text != budget.max.toStringAsFixed(0)) {
           _controller.text = budget.max.toStringAsFixed(0);
         }
 
-        final percentage =
-            budget.max == 0 ? 0.0 : (budget.value / budget.max).clamp(0.0, 1.0);
+        final percentage = budget.max == 0
+            ? 0.0
+            : (budget.value / budget.max).clamp(0.0, 1.0);
 
         return Scaffold(
           appBar: AppBar(
@@ -48,6 +45,23 @@ class _BudgetPageState extends State<BudgetPage> {
             backgroundColor: const Color(0xFF1976D2),
             foregroundColor: Colors.white,
             elevation: 0,
+            actions: [
+              Padding(
+                padding: const EdgeInsets.only(right: 16),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/profile');
+                  },
+                  child: const CircleAvatar(
+                    radius: 18,
+                    backgroundImage: NetworkImage(
+                      'https://example.com/avatar.jpg',
+                    ),
+                    backgroundColor: Colors.white,
+                  ),
+                ),
+              ),
+            ],
           ),
           body: SingleChildScrollView(
             padding: const EdgeInsets.all(20),
@@ -123,33 +137,33 @@ class _BudgetPageState extends State<BudgetPage> {
                         TweenAnimationBuilder<double>(
                           tween: Tween(begin: 0, end: percentage),
                           duration: const Duration(milliseconds: 400),
-                          builder:
-                              (context, value, _) => Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  SizedBox(
-                                    height: 100,
-                                    width: 100,
-                                    child: CircularProgressIndicator(
-                                      value: value,
-                                      strokeWidth: 10,
-                                      backgroundColor: Colors.grey.shade200,
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        value > 0.9
-                                            ? Colors.redAccent
-                                            : const Color(0xFF1976D2),
-                                      ),
-                                    ),
+                          builder: (context, value, _) => Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              SizedBox(
+                                height: 100,
+                                width: 100,
+                                child: CircularProgressIndicator(
+                                  value: value,
+                                  strokeWidth: 10,
+                                  backgroundColor: Colors.grey.shade200,
+                                  valueColor:
+                                  AlwaysStoppedAnimation<Color>(
+                                    value > 0.9
+                                        ? Colors.redAccent
+                                        : const Color(0xFF1976D2),
                                   ),
-                                  Text(
-                                    '${(value * 100).toStringAsFixed(0)}%',
-                                    style: const TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
+                                ),
                               ),
+                              Text(
+                                '${(value * 100).toStringAsFixed(0)}%',
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                         const SizedBox(height: 24),
                         Slider(
