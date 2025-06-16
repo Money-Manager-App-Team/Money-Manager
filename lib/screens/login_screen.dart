@@ -102,7 +102,8 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Column(
+        body: SingleChildScrollView(
+        child: Column(
         children: [
           Container(
             width: double.infinity,
@@ -150,7 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   autofillHints: const [AutofillHints.email],
                   decoration: InputDecoration(
                     filled: true,
-                    fillColor: const Color(0xFFF3F3F3),
+                    fillColor: Colors.grey[100],
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: const BorderSide(color: Colors.grey),
@@ -235,6 +236,7 @@ class _LoginScreenState extends State<LoginScreen> {
           ),
         ],
       ),
+    ),
     );
   }
 

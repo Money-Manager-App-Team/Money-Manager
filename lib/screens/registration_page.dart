@@ -73,104 +73,115 @@ class _RegistrationPageState extends State<RegistrationPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 40.0),
-                  decoration: const BoxDecoration(
-                    color: Color(0xFF1976D2),
-                    borderRadius: BorderRadius.vertical(
-                      top: Radius.circular(20),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // GÓRNY NAGŁÓWEK
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(vertical: 50),
+              decoration: const BoxDecoration(
+                color: Color(0xFF1976D2),
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30),
+                  bottomRight: Radius.circular(30),
+                ),
+              ),
+              child: const Column(
+                children: [
+                  Text(
+                    'Money Manager',
+                    style: TextStyle(color: Colors.white, fontSize: 24),
+                  ),
+                  SizedBox(height: 8),
+                  Text(
+                    'REJESTRACJA',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      letterSpacing: 1,
                     ),
                   ),
-                  child: const Column(
-                    children: [
-                      Text(
-                        'Money Manager',
-                        style: TextStyle(color: Colors.white, fontSize: 20),
-                      ),
-                      SizedBox(height: 8),
-                      Text(
-                        'REJESTRACJA',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
-                    ],
+                ],
+              ),
+            ),
+            const SizedBox(height: 40),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _buildTextField(
+                    controller: _loginController,
+                    label: 'LOGIN',
                   ),
-                ),
-                const SizedBox(height: 30),
-                _buildTextField(controller: _loginController, label: 'LOGIN'),
-                const SizedBox(height: 20),
-                _buildTextField(
-                  controller: _emailController,
-                  label: 'ADRES E-MAIL',
-                  keyboardType: TextInputType.emailAddress,
-                ),
-                const SizedBox(height: 20),
-                _buildTextField(
-                  controller: _passwordController,
-                  label: 'HASŁO',
-                  obscure: true,
-                ),
-                const SizedBox(height: 20),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      const Text(
-                        'JUŻ MASZ KONTO?',
-                        style: TextStyle(fontSize: 12),
-                      ),
-                      TextButton(
-                        onPressed: () => Navigator.pop(context),
-                        child: const Text(
-                          'ZALOGUJ SIĘ',
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
+                  const SizedBox(height: 20),
+                  _buildTextField(
+                    controller: _emailController,
+                    label: 'ADRES E-MAIL',
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  const SizedBox(height: 20),
+                  _buildTextField(
+                    controller: _passwordController,
+                    label: 'HASŁO',
+                    obscure: true,
+                  ),
+                  const SizedBox(height: 10),
+                  Align(
+                    alignment: Alignment.centerRight,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        const Text(
+                          'JUŻ MASZ KONTO?',
+                          style: TextStyle(fontSize: 12),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: const Text(
+                            'Zaloguj się',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.black87,
+                            ),
                           ),
                         ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _register,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _isLoading
+                            ? Colors.grey.shade400
+                            : Colors.grey.shade200,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                          side: BorderSide(color: Colors.grey.shade500),
+                        ),
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 30),
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 40,
-                      vertical: 16,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(16),
-                      side: const BorderSide(color: Colors.grey),
-                    ),
-                    backgroundColor: Colors.grey[200],
-                  ),
-                  onPressed: _isLoading ? null : _register,
-                  child:
-                      _isLoading
+                      child: _isLoading
                           ? const CircularProgressIndicator()
                           : const Text(
-                            'Zarejestruj się',
-                            style: TextStyle(fontSize: 18, color: Colors.black),
-                          ),
-                ),
-                const SizedBox(height: 40),
-              ],
+                        'Zarejestruj się',
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
@@ -207,7 +218,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(16),
-              borderSide: const BorderSide(color: Colors.blue),
+              borderSide:   BorderSide(color: Colors.grey.shade500),
             ),
           ),
         ),
