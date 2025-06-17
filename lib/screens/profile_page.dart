@@ -9,6 +9,67 @@ class ProfilePage extends StatelessWidget {
     // Nie nawigujemy ręcznie - StreamBuilder w main.dart to zrobi
   }
 
+  void _changePassword(BuildContext context) async {
+    final TextEditingController passwordController = TextEditingController();
+
+    await showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Zmień hasło'),
+          content: TextField(
+            controller: passwordController,
+            obscureText: true,
+            decoration: const InputDecoration(
+              labelText: 'Nowe hasło',
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Anuluj'),
+            ),
+            TextButton(
+              onPressed: () async {
+                final newPassword = passwordController.text.trim();
+                if (newPassword.isNotEmpty && newPassword.length >= 6) {
+                  try {
+                    await FirebaseAuth.instance.currentUser
+                        ?.updatePassword(newPassword);
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Hasło zostało zmienione.'),
+                        backgroundColor: Colors.green,
+                      ),
+                    );
+                  } catch (e) {
+                    Navigator.pop(context);
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('Błąd zmiany hasła: $e'),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  }
+                } else {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Hasło musi mieć co najmniej 6 znaków.'),
+                      backgroundColor: Colors.orange,
+                    ),
+                  );
+                }
+              },
+              child: const Text('Zmień'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser;
@@ -67,6 +128,20 @@ class ProfilePage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
+            Center(
+              child: ElevatedButton.icon(
+                onPressed: () => _changePassword(context),
+                icon: const Icon(Icons.lock_reset),
+                label: const Text('Zmień hasło'),
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueGrey,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+
           ],
         ),
       ),
